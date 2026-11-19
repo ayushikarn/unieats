@@ -11,25 +11,25 @@ interface Card {
 
 const CARDS: Card[] = [
   {
-    img: "/images/food-courts.jpg",
+    img: `${import.meta.env.BASE_URL}images/food-courts.jpg`,
     alt: "A hearty plate of campus food court rice dish",
     title: "Campus Food Courts",
     body: "When everyone wants something different.",
   },
   {
-    img: "/images/cafes.jpg",
+    img: `${import.meta.env.BASE_URL}images/cafes.jpg`,
     alt: "Barista pouring latte art into a coffee cup",
     title: "Campus Cafés",
     body: "A pause between lectures, one sip at a time.",
   },
   {
-    img: "/images/quick-bites.jpg",
+    img: `${import.meta.env.BASE_URL}images/quick-bites.jpg`,
     alt: "A freshly packed sandwich for a quick bite",
     title: "Quick Bites",
     body: "Good ideas for the five-minute break.",
   },
   {
-    img: "/images/beverages.jpg",
+    img: `${import.meta.env.BASE_URL}images/beverages.jpg`,
     alt: "Fresh oranges beside a glass of juice",
     title: "Snacks and Beverages",
     body: "Little pick-me-ups for long campus days.",
@@ -93,3 +93,5 @@ export default function CampusFood() {
     </section>
   );
 }
+
+

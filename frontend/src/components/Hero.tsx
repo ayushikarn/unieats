@@ -94,7 +94,7 @@ export default function Hero() {
             <div className="hero-photo photo-float">
               <div className="hero-photo__ring">
                 <img
-                  src="/images/hero-curry.jpg"
+                  src={`${import.meta.env.BASE_URL}images/hero-curry.jpg`}
                   alt="A comforting plate of curry with fresh naan bread"
                   loading="eager"
                   width={520}
@@ -134,3 +134,4 @@ export default function Hero() {
     </section>
   );
 }
+
