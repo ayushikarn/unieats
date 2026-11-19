@@ -1,0 +1,320 @@
+/* ============================================================
+   UniEats — global styles, design tokens, shared animations
+   ============================================================ */
+
+:root {
+  /* Palette (design authority) */
+  --cream: #fff5eb;
+  --red: #d94343;
+  --red-deep: #c23737;
+  --peach: #f2b8a0;
+  --charcoal: #30302f;
+  --sage: #8faf91;
+  --white: #ffffff;
+
+  /* Derived tints (kept inside the same design language) */
+  --peach-tint: #fdeee3;
+  --peach-bubble: #fbe4d9;
+  --sage-tint: #e9f1ea;
+  --card-cream: #fff9f3;
+  --border-soft: #f1e5da;
+  --text-body: #4b4a48;
+  --text-muted: #7c7a76;
+  --footer-muted: #b7b4af;
+  --bot-bubble: #f3f6ee;
+  --bot-border: #e6ecdd;
+  --input-grey: #fff9f4;
+
+  /* Elevation */
+  --shadow-card: 0 18px 40px rgba(217, 67, 67, 0.1);
+  --shadow-soft: 0 10px 30px rgba(48, 48, 47, 0.06);
+  --ring: 0 0 0 4px rgba(217, 67, 67, 0.14);
+
+  /* Layout */
+  --container: 1220px;
+  --gutter: 24px;
+
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Poppins", "Inter", system-ui, sans-serif;
+  --font-hand: "Caveat", "Segoe Script", cursive;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--cream);
+  color: var(--charcoal);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* ---------- Layout helpers ---------- */
+
+.container {
+  width: min(var(--container), 100% - var(--gutter) * 2);
+  margin-inline: auto;
+}
+
+.section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---------- Type helpers ---------- */
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--charcoal);
+  font-size: clamp(22px, 1.55vw, 23px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.hand-note {
+  font-family: var(--font-hand);
+  color: var(--red);
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* ---------- Scroll reveal ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Doodle animation system ---------- */
+
+.doodle {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  color: var(--red);
+  z-index: 2;
+  animation: floatY var(--dur, 5s) ease-in-out infinite;
+  animation-delay: var(--fdelay, 0s);
+}
+
+.doodle--charcoal {
+  color: var(--charcoal);
+}
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-9px) rotate(calc(var(--rot, 0deg) + 2deg));
+  }
+}
+
+/* self-drawing strokes: paths carry pathLength="1" */
+.draw path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: drawIn 1.4s ease forwards;
+}
+
+.reveal:not(.is-visible) .draw path {
+  animation-play-state: paused;
+}
+
+.draw path:nth-child(2) {
+  animation-delay: 0.45s;
+}
+
+.draw path:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@keyframes drawIn {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* steam rising from cup / bowl doodles */
+.steam {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: steamUp 2.8s ease-in-out infinite;
+}
+
+.steam--2 {
+  animation-delay: 0.9s;
+}
+
+.steam--3 {
+  animation-delay: 1.8s;
+}
+
+@keyframes steamUp {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-7px);
+  }
+}
+
+/* twinkling stars / sparkles */
+.twinkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle 2.6s ease-in-out infinite;
+  animation-delay: var(--tdelay, 0s);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.82) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12) rotate(12deg);
+  }
+}
+
+/* gentle heart pulse */
+.pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: heartbeat 2.4s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+}
+
+/* floating hero photo */
+.photo-float {
+  animation: photoFloat 6s ease-in-out infinite;
+}
+
+@keyframes photoFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ---------- Shared focus visibility ---------- */
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .draw path {
+    stroke-dashoffset: 0 !important;
+  }
+
+  .chat-seq,
+  .chat-card .chat-typing {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .chat-card .chat-typing {
+    display: none !important;
+  }
+}

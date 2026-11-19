@@ -1,0 +1,145 @@
+.ai {
+  background: #fff5eb;
+  padding: 119px 0 119px;
+}
+
+.ai__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.895fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.ai__copy {
+  max-width: 640px;
+}
+
+.ai__title {
+  margin-top: 14px;
+  font-size: clamp(23px, 1.67vw, 24px);
+}
+
+.ai__lead {
+  margin-top: 22px;
+  font-size: 19px;
+  line-height: 1.75;
+  color: var(--text-body);
+}
+
+/* ---------- CTA button ---------- */
+
+.ai__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  background: var(--red);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 15px 34px;
+  border-radius: 999px;
+  box-shadow: 0 14px 28px rgba(217, 67, 67, 0.28);
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.ai__cta:hover {
+  background: var(--red-deep);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 34px rgba(217, 67, 67, 0.36);
+}
+
+.ai__cta:active {
+  transform: translateY(-1px);
+}
+
+/* ---------- listening doodle ---------- */
+
+.ai__listening {
+  position: relative;
+  margin-top: 44px;
+  height: 92px;
+}
+
+.ai__arrow {
+  width: 120px;
+  height: 74px;
+  color: var(--red);
+  display: block;
+}
+
+.ai__listening-note {
+  position: absolute;
+  left: 10px;
+  top: 52px;
+  font-size: 24px;
+  transform: rotate(-6deg);
+}
+
+/* ---------- whitespace doodles ---------- */
+
+.ai__spark {
+  top: 54px;
+  left: 44%;
+  width: 26px;
+}
+
+.ai__star {
+  bottom: 46px;
+  left: 6%;
+  width: 30px;
+}
+
+/* ================= responsive ================= */
+
+@media (max-width: 1100px) {
+  .ai__inner {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .ai__copy {
+    max-width: 620px;
+  }
+
+  .ai__spark {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ai {
+    padding: 56px 0 64px;
+  }
+
+  .ai__lead {
+    font-size: 15.5px;
+  }
+
+  .ai__cta {
+    padding: 14px 26px;
+    font-size: 15px;
+  }
+
+  .ai__listening {
+    margin-top: 34px;
+    height: 84px;
+  }
+
+  .ai__arrow {
+    width: 100px;
+    height: 62px;
+  }
+
+  .ai__listening-note {
+    font-size: 21px;
+    top: 46px;
+  }
+
+  .ai__star {
+    display: none;
+  }
+}

@@ -1,0 +1,1 @@
+SELECT id, name, price, dietary_type FROM food_item LIMIT 10;

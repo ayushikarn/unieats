@@ -1,0 +1,203 @@
+// ============================================================
+// UniEats — Prisma Schema
+// Target: PostgreSQL 16 (Docker Compose)
+// MVP scope: LPU campus only
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------
+// Campus
+// ---------------------------------------------------------------
+model Campus {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  location    String?
+  description String?
+  created_at  DateTime   @default(now())
+
+  restaurants Restaurant[]
+
+  @@index([name])
+}
+
+// ---------------------------------------------------------------
+// Users
+// ---------------------------------------------------------------
+enum UserRole {
+  STUDENT
+  FACULTY
+  ADMIN
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  password_hash String
+  role          UserRole        @default(STUDENT)
+  created_at    DateTime        @default(now())
+
+  preferences   UserPreference?
+  reviews       Review[]
+  recommendations Recommendation[]
+
+  @@index([email])
+}
+
+// ---------------------------------------------------------------
+// User Preferences
+// One-to-one relationship with User (user_id is unique)
+// ---------------------------------------------------------------
+model UserPreference {
+  id            Int      @id @default(autoincrement())
+  user_id       Int      @unique
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // AI-ready fields (for future recommendation engine)
+  budget        Decimal?      // max spend per meal
+  mood          String?       // e.g. "comfort", "light", "spicy"
+  dietary_pref  String?       // e.g. "vegetarian", "vegan", "non-veg", "any"
+  eating_habits String?       // e.g. "breakfast", "lunch", "dinner", "snack"
+  created_at    DateTime      @default(now())
+
+  @@index([user_id])
+}
+
+// ---------------------------------------------------------------
+// Restaurants
+// ---------------------------------------------------------------
+model Restaurant {
+  id          Int          @id @default(autoincrement())
+  name        String
+  campus_id   Int
+  campus      Campus       @relation(fields: [campus_id], references: [id], onDelete: Cascade)
+  description String?
+  address     String?
+  rating      Decimal?     @default(0)
+  created_at  DateTime     @default(now())
+
+  food_items  FoodItem[]
+
+  @@index([campus_id])
+  @@index([name])
+}
+
+// ---------------------------------------------------------------
+// Categories
+// ---------------------------------------------------------------
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String?
+  created_at  DateTime     @default(now())
+
+  food_items  FoodItem[]
+
+  @@index([name])
+}
+
+// ---------------------------------------------------------------
+// Food Items
+// ---------------------------------------------------------------
+model FoodItem {
+  id                Int                  @id @default(autoincrement())
+  restaurant_id     Int
+  restaurant        Restaurant           @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  price             Decimal              // Prisma Decimal — no Float precision loss
+  category_id       Int
+  category          Category             @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  dietary_type      DietaryType          @default(ANY)
+  availability      AvailabilityStatus   @default(AVAILABLE)
+  created_at        DateTime             @default(now())
+
+  tags              FoodItemFoodTag[]
+  reviews           Review[]
+  recommendations   Recommendation[]
+
+  @@index([restaurant_id])
+  @@index([category_id])
+  @@index([name])
+}
+
+// ---------------------------------------------------------------
+// Food Tags
+// ---------------------------------------------------------------
+enum DietaryType {
+  ANY
+  VEGETARIAN
+  VEGAN
+  NON_VEGETARIAN
+  EGLUTEN_FREE
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  OUT_OF_STOCK
+  TEMPORARILY_CLOSED
+}
+
+model FoodTag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  food_items FoodItemFoodTag[]
+
+  @@index([name])
+}
+
+// ---------------------------------------------------------------
+// Junction table: FoodItem <-> FoodTag (many-to-many)
+// ---------------------------------------------------------------
+model FoodItemFoodTag {
+  food_item_id Int
+  food_tag_id  Int
+  food_item    FoodItem @relation(fields: [food_item_id], references: [id], onDelete: Cascade)
+  food_tag     FoodTag  @relation(fields: [food_tag_id], references: [id], onDelete: Cascade)
+
+  @@id([food_item_id, food_tag_id])
+  @@index([food_tag_id])
+}
+
+// ---------------------------------------------------------------
+// Reviews
+// ---------------------------------------------------------------
+model Review {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  food_item_id Int
+  food_item  FoodItem @relation(fields: [food_item_id], references: [id], onDelete: Cascade)
+  rating     Int      // 1-5 stars
+  comment    String?
+  created_at DateTime @default(now())
+
+  @@unique([user_id, food_item_id])  // one review per user per food item
+  @@index([food_item_id])
+  @@index([user_id])
+}
+
+// ---------------------------------------------------------------
+// Recommendations
+// ---------------------------------------------------------------
+model Recommendation {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  food_item_id Int
+  food_item    FoodItem @relation(fields: [food_item_id], references: [id], onDelete: Cascade)
+  reason       String?
+  created_at   DateTime @default(now())
+
+  @@unique([user_id, food_item_id])
+  @@index([user_id])
+  @@index([food_item_id])
+}

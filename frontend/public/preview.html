@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>UniEats — responsive preview harness</title>
+<style>
+  html, body { margin: 0; background: #4a4a49; overflow-x: hidden; }
+  #stage { transform-origin: top left; position: relative; }
+  iframe { border: 0; display: block; background: #fff5eb; }
+  #tag {
+    position: fixed; top: 6px; left: 6px; z-index: 9;
+    font: 600 11px/1.4 monospace; color: #fff; background: rgba(0,0,0,.6);
+    padding: 3px 7px; border-radius: 4px; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div id="tag"></div>
+<div id="qares" style="display:none"></div>
+<div id="stage"><iframe id="f" src="/"></iframe></div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const W = parseInt(params.get("w") || "1440", 10);
+  const f = document.getElementById("f");
+  const stage = document.getElementById("stage");
+  document.getElementById("tag").textContent = "viewport " + W + "px";
+
+  let measured = 0;      // last known true content height
+  let stableCount = 0;
+
+  /* Shrink the frame so the inner document reports its real content height,
+     then grow it to that height (full-viewport => reveals fire everywhere). */
+  function fit() {
+    try {
+      const doc = f.contentDocument;
+      const win = f.contentWindow;
+      if (!doc || !doc.body || !win) return;
+
+      f.style.width = W + "px";
+      f.style.height = "50px";
+
+      const h = Math.max(
+        doc.documentElement.scrollHeight,
+        doc.body.scrollHeight,
+        (doc.body.lastElementChild ? doc.body.lastElementChild.getBoundingClientRect().bottom + win.scrollY : 0),
+      );
+
+      if (h > 100 && Math.abs(h - measured) <= 4) {
+        stableCount++;
+      } else {
+        stableCount = 0;
+        measured = h;
+      }
+
+      f.style.height = Math.max(measured, 100) + "px";
+
+      const available = window.innerWidth - 8;
+      const scale = W <= available ? Math.min(2, available / W) : available / W;
+
+      stage.style.width = W + "px";
+      stage.style.transform = "scale(" + scale + ")";
+      stage.style.height = Math.max(measured, 100) * scale + "px";
+
+      window.__qa = {
+        W: W,
+        innerW: win.innerWidth,
+        scrollW: doc.documentElement.scrollWidth,
+        overflowX: doc.documentElement.scrollWidth > win.innerWidth + 1,
+        contentH: measured,
+        stable: stableCount >= 3,
+        scale: scale,
+      };
+      const qares = document.getElementById("qares");
+      if (qares) qares.textContent = "QA=" + JSON.stringify(window.__qa);
+    } catch (e) {
+      window.__qa = { error: String(e) };
+    }
+  }
+
+  f.addEventListener("load", fit);
+  const iv = setInterval(fit, 300);
+  setTimeout(() => clearInterval(iv), 25000);
+  fit();
+</script>
+</body>
+</html>
